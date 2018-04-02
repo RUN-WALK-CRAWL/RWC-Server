@@ -28,12 +28,23 @@ app.use(express.urlencoded({extended: true}));
 
 app.get('/search', (req, res) => {
   console.log('Routing an ajax request for ', req.params);
-  let url = `https://developers.zomato.com/api/v2.1/search?count=${req.query.count}lat=${req.query.lat}&lon=${req.query.lon}&radius=${req.query.radius}&establishment_type=283&category=11&sort=real_distance&order=asc`;
+  let url = `https://developers.zomato.com/api/v2.1/search`;
   superagent.get(url)
-    .set('user_key', ZOMATO_KEY)
-    .then(console.log(res));
+    .set({'user-key': ZOMATO_KEY})
+    .query({
+      count: '10',
+      lat: '47.608013',
+      lon: '-122.335167',
+      radius: '100',
+      establishment_type: 283,
+      category: 11,
+      sort: 'real_distance',
+      order: 'asc'
+    })
+    .then(res => console.log(res.body))
+    .catch(err => console.log(err));
 });
-
+  
 //LISTEN
 app.get('*', (req, res) => res.redirect(CLIENT_URL));
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
