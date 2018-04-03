@@ -26,24 +26,39 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.get('/search', (req, res) => {
-  // console.log('Routing an ajax request for ', req.body);
+app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
+  console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
+  const combinedResults = {};
   superagent.get(url)
     .set({'user-key': ZOMATO_KEY})
     .query({
-      count: '20',
-      lat: '47.608013',
-      lon: '-122.335167',
-      radius: '5000',
-      establishment_type: '283,6,7',
-      category: 11,
+      count: '1',
+      lat: req.params.lat,
+      lon: req.params.lng,
+      radius: req.params.distance,
+      establishment_type: '6',
       sort: 'real_distance',
-      order: 'asc'
-    })
-    .then(locations => res.send(locations.text))
+      order: 'asc'})
+    .then(
+      pubs => {combinedResults.pub = pubs.text;
+        superagent.get(url)
+          .set({'user-key': ZOMATO_KEY})
+          .query({
+            count: '1',
+            lat: req.params.lat,
+            lon: req.params.lng,
+            radius: req.params.distance,
+            establishment_type: '7',
+            sort: 'real_distance',
+            order: 'asc'})
+          .then( bars => {
+            combinedResults.bar = bars.text;
+            res.send(combinedResults);});
+      })
     .catch(err => console.log(err));
 });
+
 
 //LISTEN
 app.get('*', (req, res) => res.redirect(CLIENT_URL));
