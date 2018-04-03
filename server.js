@@ -26,6 +26,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+app.get('/api/v1/login/:username', (req, res) => {
+  client.query(`SELECT user_password FROM users WHERE user_name === ${req.params.username}`)
+  .then(password => {
+    if(password===req.query.token){
+      res.send(true)
+    }
+  })
+});
+
 app.get('/search', (req, res) => {
   // console.log('Routing an ajax request for ', req.body);
   let url = `https://developers.zomato.com/api/v2.1/search`;
