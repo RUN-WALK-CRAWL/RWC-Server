@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.get('/search', (req, res) => {
-  console.log('Routing an ajax request for ', req.params);
+  // console.log('Routing an ajax request for ', req.body);
   let url = `https://developers.zomato.com/api/v2.1/search`;
   superagent.get(url)
     .set({'user-key': ZOMATO_KEY})
@@ -41,10 +41,10 @@ app.get('/search', (req, res) => {
       sort: 'real_distance',
       order: 'asc'
     })
-    .then(res => console.log(res.body))
+    .then(locations => res.send(locations.text))
     .catch(err => console.log(err));
 });
-  
+
 //LISTEN
 app.get('*', (req, res) => res.redirect(CLIENT_URL));
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
