@@ -32,11 +32,11 @@ app.get('/search', (req, res) => {
   superagent.get(url)
     .set({'user-key': ZOMATO_KEY})
     .query({
-      count: '10',
+      // count: '10',
       lat: '47.608013',
       lon: '-122.335167',
-      radius: '100',
-      establishment_type: 283,
+      radius: '5000',
+      establishment_type: '283,6,7,8',
       category: 11,
       sort: 'real_distance',
       order: 'asc'
