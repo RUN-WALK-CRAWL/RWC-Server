@@ -28,11 +28,11 @@ app.use(express.urlencoded({extended: true}));
 
 app.get('/api/v1/login/:username', (req, res) => {
   client.query(`SELECT user_password FROM users WHERE user_name === ${req.params.username}`)
-  .then(password => {
-    if(password===req.query.token){
-      res.send(true)
-    }
-  })
+    .then(password => {
+      if(password===req.query.token){
+        res.send(true);
+      }
+    });
 });
 
 app.post('/api/v1/crawls', (req, res) => {
@@ -40,28 +40,43 @@ app.post('/api/v1/crawls', (req, res) => {
   client.query(`INSERT INTO routes(location, stops, distance) VALUES($1, $2, $3)`,
     [location, stops, distance]
   )
-  .then(results => res.sendStatus(201))
-  .catch(console.error);
+    .then(results => res.sendStatus(201))
+    .catch(console.error);
 });
 
-app.get('/search', (req, res) => {
-  // console.log('Routing an ajax request for ', req.body);
+app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
+  console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
+  const combinedResults = {};
   superagent.get(url)
     .set({'user-key': ZOMATO_KEY})
     .query({
       count: '20',
-      lat: '47.608013',
-      lon: '-122.335167',
-      radius: '5000',
-      establishment_type: '283,6,7',
-      category: 11,
+      lat: req.params.lat,
+      lon: req.params.lng,
+      radius: req.params.distance,
+      establishment_type: '6',
       sort: 'real_distance',
-      order: 'asc'
-    })
-    .then(locations => res.send(locations.text))
+      order: 'asc'})
+    .then(
+      pubs => {combinedResults.pub = pubs.text;
+        superagent.get(url)
+          .set({'user-key': ZOMATO_KEY})
+          .query({
+            count: '20',
+            lat: req.params.lat,
+            lon: req.params.lng,
+            radius: req.params.distance,
+            establishment_type: '7',
+            sort: 'real_distance',
+            order: 'asc'})
+          .then( bars => {
+            combinedResults.bar = bars.text;
+            res.send(combinedResults);});
+      })
     .catch(err => console.log(err));
 });
+
 
 //LISTEN
 app.get('*', (req, res) => res.redirect(CLIENT_URL));
