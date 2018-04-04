@@ -26,6 +26,24 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+app.get('/api/v1/login/:username', (req, res) => {
+  client.query(`SELECT user_password FROM users WHERE user_name === ${req.params.username}`)
+    .then(password => {
+      if(password===req.query.token){
+        res.send(true);
+      }
+    });
+});
+
+app.post('/api/v1/crawls', (req, res) => {
+  let {location, stops, distance} = req.body;
+  client.query(`INSERT INTO routes(location, stops, distance) VALUES($1, $2, $3)`,
+    [location, stops, distance]
+  )
+    .then(results => res.sendStatus(201))
+    .catch(console.error);
+});
+
 app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
   console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
