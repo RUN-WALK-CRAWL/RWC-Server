@@ -51,7 +51,7 @@ app.get('/search/:lat/:lng/:stops/:price/', (req, res) => {
   superagent.get(url)
     .set({'user-key': ZOMATO_KEY})
     .query({
-      count: '10',
+      count: '20',
       lat: req.params.lat,
       lon: req.params.lng,
       radius: 100,
@@ -63,7 +63,7 @@ app.get('/search/:lat/:lng/:stops/:price/', (req, res) => {
         superagent.get(url)
           .set({'user-key': ZOMATO_KEY})
           .query({
-            count: '10',
+            count: '20',
             lat: req.params.lat,
             lon: req.params.lng,
             radius: 100,
