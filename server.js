@@ -51,7 +51,12 @@ app.post('/api/v1/crawls',  (req, res) => {
     .then(res.send('Saved!'))
     .catch(console.error);
 });
+<<<<<<< HEAD
 app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
+=======
+
+app.get('/search/:lat/:lng/:stops/:price/', (req, res) => {
+>>>>>>> 50f341ab808b5df53f36ab8ee3dbf94f39858763
   console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
   const combinedResults = {};
@@ -61,7 +66,7 @@ app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
       count: '20',
       lat: req.params.lat,
       lon: req.params.lng,
-      radius: req.params.distance,
+      radius: 100,
       establishment_type: '6',
       sort: 'real_distance',
       order: 'asc'})
@@ -73,7 +78,7 @@ app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
             count: '20',
             lat: req.params.lat,
             lon: req.params.lng,
-            radius: req.params.distance,
+            radius: 100,
             establishment_type: '7',
             sort: 'real_distance',
             order: 'asc'})
