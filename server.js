@@ -27,14 +27,14 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.get('/api/v1/rwc/:username', (req, res) => {
-    client.query(`SELECT password, id, username FROM users WHERE username='${req.params.username}';`)  
-  .then(result => {
+  client.query(`SELECT password, id, username FROM users WHERE username='${req.params.username}';`)
+    .then(result => {
       if(result.rows[0].password==req.headers.token){
-       let validate={
+        let validate={
           name:result.rows[0].username,
           token:true,
           id:result.rows[0].id
-        }
+        };
         res.send(validate);
       }
     })
@@ -49,7 +49,7 @@ app.post('/api/v1/register', (req, res) => {
     .then(res.send(true))
     .catch(console.error);
 });
-app.post('/api/v1/crawls/:id',  (req, res) => {
+app.post('/api/v1/crawls/:id', (req, res) => {
   let {routeName, locationName, address, latitude, longitude, price, priceRange, rating, thumb} = req.body;
   client.query(`INSERT INTO crawls(route_name, location_name, address, latitude, longitude, price, price_range, rating, thumb, user_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
     [routeName, locationName, address, latitude, longitude, price, priceRange, rating, thumb, req.params.id]
@@ -58,7 +58,7 @@ app.post('/api/v1/crawls/:id',  (req, res) => {
     .catch(console.error);
 });
 
-app.get('/search/:lat/:lng/:stops/:price/', (req, res) => {
+app.get('/search/:lat/:lng/:stops/:price', (req, res) => {
   console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
   const combinedResults = {};
