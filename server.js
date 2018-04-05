@@ -44,17 +44,17 @@ app.post('/api/v1/crawls', (req, res) => {
     .catch(console.error);
 });
 
-app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
+app.get('/search/:lat/:lng/:stops/:price/', (req, res) => {
   console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
   const combinedResults = {};
   superagent.get(url)
     .set({'user-key': ZOMATO_KEY})
     .query({
-      count: '20',
+      count: '10',
       lat: req.params.lat,
       lon: req.params.lng,
-      radius: req.params.distance,
+      radius: 100,
       establishment_type: '6',
       sort: 'real_distance',
       order: 'asc'})
@@ -63,10 +63,10 @@ app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
         superagent.get(url)
           .set({'user-key': ZOMATO_KEY})
           .query({
-            count: '20',
+            count: '10',
             lat: req.params.lat,
             lon: req.params.lng,
-            radius: req.params.distance,
+            radius: 100,
             establishment_type: '7',
             sort: 'real_distance',
             order: 'asc'})
