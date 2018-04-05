@@ -26,37 +26,39 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.get('/api/v1/login/:username', (req, res) => {
-  client.query(`SELECT user_password FROM users WHERE user_name === ${req.params.username}`)
-    .then(password => {
-      if(password===req.query.token){
-        res.send(true);
+app.get('/api/v1/rwc/:username', (req, res) => {
+    client.query(`SELECT password, id, username FROM users WHERE username='${req.params.username}';`)  
+  .then(result => {
+      if(result.rows[0].password==req.headers.token){
+       let validate={
+          name:result.rows[0].username,
+          token:true,
+          id:result.rows[0].id
+        }
+        res.send(validate);
       }
-    });
+    })
+    .catch(console.error);
 });
 
 app.post('/api/v1/register', (req, res) => {
   let {username, token} = req.body;
-  client.query(`INSERT INTO users(user_name, user_password) VALUES($1, $2)`,
+  client.query(`INSERT INTO users(username, password) VALUES($1, $2)`,
     [username, token]
   )
     .then(res.send(true))
     .catch(console.error);
 });
-app.post('/api/v1/crawls',  (req, res) => {
+app.post('/api/v1/crawls/:id',  (req, res) => {
   let {routeName, locationName, address, latitude, longitude, price, priceRange, rating, thumb} = req.body;
-  client.query(`INSERT INTO crawls(route_name, location_name, address, latitude, longitude, price, price_range, rating, thumb) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-    [routeName, locationName, address, latitude, longitude, price, priceRange, rating, thumb]
+  client.query(`INSERT INTO crawls(route_name, location_name, address, latitude, longitude, price, price_range, rating, thumb, user_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+    [routeName, locationName, address, latitude, longitude, price, priceRange, rating, thumb, req.params.id]
   )
     .then(res.send('Saved!'))
     .catch(console.error);
 });
-<<<<<<< HEAD
-app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
-=======
 
 app.get('/search/:lat/:lng/:stops/:price/', (req, res) => {
->>>>>>> 50f341ab808b5df53f36ab8ee3dbf94f39858763
   console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
   const combinedResults = {};
