@@ -35,16 +35,28 @@ app.get('/api/v1/login/:username', (req, res) => {
     });
 });
 
-app.post('/api/v1/crawls', (req, res) => {
-  let {location, stops, distance} = req.body;
-  client.query(`INSERT INTO routes(location, stops, distance) VALUES($1, $2, $3)`,
-    [location, stops, distance]
+app.post('/api/v1/register', (req, res) => {
+  let {username, token} = req.body;
+  client.query(`INSERT INTO users(user_name, user_password) VALUES($1, $2)`,
+    [username, token]
   )
-    .then(results => res.sendStatus(201))
+    .then(res.send(true))
     .catch(console.error);
 });
+app.post('/api/v1/crawls',  (req, res) => {
+  let {routeName, locationName, address, latitude, longitude, price, priceRange, rating, thumb} = req.body;
+  client.query(`INSERT INTO crawls(route_name, location_name, address, latitude, longitude, price, price_range, rating, thumb) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+    [routeName, locationName, address, latitude, longitude, price, priceRange, rating, thumb]
+  )
+    .then(res.send('Saved!'))
+    .catch(console.error);
+});
+<<<<<<< HEAD
+app.get('/search/:lat/:lng/:stops/:distance/', (req, res) => {
+=======
 
 app.get('/search/:lat/:lng/:stops/:price/', (req, res) => {
+>>>>>>> 50f341ab808b5df53f36ab8ee3dbf94f39858763
   console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
   const combinedResults = {};
