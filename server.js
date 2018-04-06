@@ -52,7 +52,7 @@ app.post('/api/v1/register', (req, res) => {
 app.get('/api/v1/crawls/:id', (req, res) => {
   console.log(req.params.id);
   client.query(`
-    SELECT users.username, crawls.user_id, crawls.route_id, crawls.route_name
+    SELECT users.username, crawls.user_id, crawls.route_id, crawls.route_name, crawls.longitude, crawls.latitude, crawls.price, crawls.stops
     FROM crawls
     INNER JOIN users ON users.id=crawls.user_id
     WHERE users.id=$1;`, [req.params.id])
