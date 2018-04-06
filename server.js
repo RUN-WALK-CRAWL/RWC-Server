@@ -9,7 +9,6 @@ const bp = require('body-parser');
 
 //API KEYS
 const ZOMATO_KEY = process.env.ZOMATO_KEY;
-// const GOOGLE_KEY = process.env.GOOGLE_KEY;
 
 //APPLICATION SETUP
 const app = express();
@@ -29,7 +28,7 @@ app.use(express.urlencoded({extended: true}));
 app.get('/api/v1/rwc/:username', (req, res) => {
   client.query(`SELECT password, id, username FROM users WHERE username='${req.params.username}';`)
     .then(result => {
-      if(result.rows[0].password==req.headers.token){
+      if(result.rows[0].password ==req.headers.token){
         let validate={
           name:result.rows[0].username,
           token:true,
