@@ -48,10 +48,13 @@ app.post('/api/v1/register', (req, res) => {
     .then(res.send(true))
     .catch(console.error);
 });
-app.post('/api/v1/crawls/:id', (req, res) => {
-  let {routeName, locationName, address, latitude, longitude, price, priceRange, rating, thumb} = req.body;
-  client.query(`INSERT INTO crawls(route_name, location_name, address, latitude, longitude, price, price_range, rating, thumb, user_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-    [routeName, locationName, address, latitude, longitude, price, priceRange, rating, thumb, req.params.id]
+
+app.post('/api/v1/crawls/:id/:routeName',  (req, res) => {
+  let {lat, lng, price, stops} = req.body;
+  console.log(lat, lng, price, stops, req.body);
+  client.query(`INSERT INTO crawls(latitude, longitude, price, stops, user_id, route_name) VALUES($1,$2,$3,$4,$5,$6);`,
+    [lat, lng, price, stops, req.params.id, req.params.routeName]
+
   )
     .then(res.send('Saved!'))
     .catch(console.error);
