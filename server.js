@@ -49,9 +49,19 @@ app.post('/api/v1/register', (req, res) => {
     .catch(console.error);
 });
 
+app.get('/api/v1/crawls/:id', (req, res) => {
+  console.log(req.params.id);
+  client.query(`
+    SELECT users.username, crawls.route_id, crawls.route_name
+    FROM crawls
+    INNER JOIN users ON users.id=crawls.user_id
+    WHERE users.id=$1;`, [req.params.id])
+    .then(res.send('viewed'))
+    .catch(console.error);
+});
+
 app.post('/api/v1/crawls/:id/:routeName', (req, res) => {
   let {lat, lng, price, stops} = req.body;
-  console.log(lat, lng, price, stops, req.body);
   client.query(`INSERT INTO crawls(latitude, longitude, price, stops, user_id, route_name) VALUES($1,$2,$3,$4,$5,$6);`,
     [lat, lng, price, stops, req.params.id, req.params.routeName]
 
@@ -61,7 +71,6 @@ app.post('/api/v1/crawls/:id/:routeName', (req, res) => {
 });
 
 app.get('/search/:lat/:lng/:stops/:price', (req, res) => {
-  console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
   const combinedResults = {};
   superagent.get(url)
