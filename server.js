@@ -49,7 +49,7 @@ app.post('/api/v1/register', (req, res) => {
     .catch(console.error);
 });
 
-app.post('/api/v1/crawls/:id/:routeName',  (req, res) => {
+app.post('/api/v1/crawls/:id/:routeName', (req, res) => {
   let {lat, lng, price, stops} = req.body;
   console.log(lat, lng, price, stops, req.body);
   client.query(`INSERT INTO crawls(latitude, longitude, price, stops, user_id, route_name) VALUES($1,$2,$3,$4,$5,$6);`,
@@ -92,7 +92,6 @@ app.get('/search/:lat/:lng/:stops/:price', (req, res) => {
       })
     .catch(err => console.log(err));
 });
-
 
 //LISTEN
 app.get('*', (req, res) => res.redirect(CLIENT_URL));
