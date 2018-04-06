@@ -9,7 +9,6 @@ const bp = require('body-parser');
 
 //API KEYS
 const ZOMATO_KEY = process.env.ZOMATO_KEY;
-// const GOOGLE_KEY = process.env.GOOGLE_KEY;
 
 //APPLICATION SETUP
 const app = express();
@@ -29,7 +28,7 @@ app.use(express.urlencoded({extended: true}));
 app.get('/api/v1/rwc/:username', (req, res) => {
   client.query(`SELECT password, id, username FROM users WHERE username='${req.params.username}';`)
     .then(result => {
-      if(result.rows[0].password==req.headers.token){
+      if(result.rows[0].password ==req.headers.token){
         let validate={
           name:result.rows[0].username,
           token:true,
@@ -50,9 +49,20 @@ app.post('/api/v1/register', (req, res) => {
     .catch(console.error);
 });
 
-app.post('/api/v1/crawls/:id/:routeName',  (req, res) => {
+app.get('/api/v1/crawls/:id', (req, res) => {
+  console.log(req.params.id);
+  client.query(`
+    SELECT users.username, crawls.user_id, crawls.route_id, crawls.route_name, crawls.longitude, crawls.latitude, crawls.price, crawls.stops
+    FROM crawls
+    INNER JOIN users ON users.id=crawls.user_id
+    WHERE users.id=$1;`, [req.params.id])
+    .then(results => {
+      res.send(results.rows);})
+    .catch(console.error);
+});
+
+app.post('/api/v1/crawls/:id/:routeName', (req, res) => {
   let {lat, lng, price, stops} = req.body;
-  console.log(lat, lng, price, stops, req.body);
   client.query(`INSERT INTO crawls(latitude, longitude, price, stops, user_id, route_name) VALUES($1,$2,$3,$4,$5,$6);`,
     [lat, lng, price, stops, req.params.id, req.params.routeName]
 
@@ -62,7 +72,6 @@ app.post('/api/v1/crawls/:id/:routeName',  (req, res) => {
 });
 
 app.get('/search/:lat/:lng/:stops/:price', (req, res) => {
-  console.log('Routing an ajax request for ', req.params);
   let url = `https://developers.zomato.com/api/v2.1/search`;
   const combinedResults = {};
   superagent.get(url)
@@ -93,7 +102,6 @@ app.get('/search/:lat/:lng/:stops/:price', (req, res) => {
       })
     .catch(err => console.log(err));
 });
-
 
 //LISTEN
 app.get('*', (req, res) => res.redirect(CLIENT_URL));
