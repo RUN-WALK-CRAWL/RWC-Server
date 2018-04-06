@@ -56,7 +56,8 @@ app.get('/api/v1/crawls/:id', (req, res) => {
     FROM crawls
     INNER JOIN users ON users.id=crawls.user_id
     WHERE users.id=$1;`, [req.params.id])
-    .then(res.send('viewed'))
+    .then(results => {
+      res.send(results.rows);})
     .catch(console.error);
 });
 
